@@ -8,6 +8,7 @@ from data import get_loaders
 from training import test_step, train_step
 from utils import print_losses
 
+
 def calculate_coeffs(weight_series, verbose=False):
     regression_start = weight_series.shape[0] // 2
     coeffs = np.zeros(weight_series.shape[1])
