@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
 
@@ -51,3 +50,14 @@ def load_dataset(dataset_name: str, train_split: float = 0.9, verbose=True):
     y_train = y[:split]
     y_test = y[split:]
     return x_train, y_train, x_test, y_test, x_scaler, y_scaler
+
+
+def train_test_split(x, y, test_size=0.1):
+    length = x.shape[0]
+    train_split = 1 - test_size
+    split = int(length * train_split)
+    x_train = x[:split]
+    x_test = x[split:]
+    y_train = y[:split]
+    y_test = y[split:]
+    return x_train, x_test, y_train, y_test

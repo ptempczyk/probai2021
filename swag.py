@@ -91,24 +91,25 @@ def sample_from_SWAG(x_train, y_train, x_test, y_test, model, theta_swa, sigma_d
     return test_predictions_list
 
 
-def run_SWAG(dataset_name, K=10, S=500, weight_decay=1e-6):
+def run_SWAG(dataset_name, K=10, S=500, weight_decay=1e-6, train_model_flag=True):
     print("=" * 88)
     x_train, y_train, x_test, y_test, _, _ = load_dataset(dataset_name)
     batch_size = x_train.shape[0] // 9
     model = create_model(x_train, layer_dims=[50], verbose=False)
-    train_model(
-        x_train,
-        y_train,
-        x_test,
-        y_test,
-        model,
-        dataset_name,
-        lr=0.001,
-        epochs=50000,
-        verbose=False,
-        batch_size=batch_size,
-        weight_decay=weight_decay,
-    )
+    if train_model_flag:
+        train_model(
+            x_train,
+            y_train,
+            x_test,
+            y_test,
+            model,
+            dataset_name,
+            lr=0.001,
+            epochs=50000,
+            verbose=False,
+            batch_size=batch_size,
+            weight_decay=weight_decay,
+        )
     model = load_model(model, f"best_model_weights-{dataset_name}.pth", verbose=False)
     y_pred = get_test_predictions(x_train, y_train, x_test, y_test, model)
     print(f"SGD RMSE: {RMSE(y_pred, y_test):.3f}")
