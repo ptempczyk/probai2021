@@ -14,10 +14,12 @@ LR_SWAG = {
     "concrete": 0.2,
     "energy_heating_load": 0.1,
     "kin8nm": 0.1,
-    "naval_compressor_decay": 0.01,  # maybe try more
+    "naval_compressor_decay": 0.01,
     "power": 0.2,
     "protein": 0.2,
     "wine": 0.05,
     "yacht": 0.1,
     "year_prediction_msd": 0.01,
 }
+
+device = "cuda"

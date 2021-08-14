@@ -2,10 +2,13 @@ import numpy as np
 import torch
 from torch import nn
 
+from definitions import device
+
 
 def load_model(model: nn.Module, file_name: str, verbose: bool = True):
     model.load_state_dict(torch.load(file_name))
     model.eval()
+    model.to(device)
     if verbose:
         print(f"Model {file_name} loaded.")
     return model
@@ -24,4 +27,5 @@ def create_model(x_train: np.array, layer_dims: list = None, verbose: bool = Tru
     model = nn.Sequential(*layers)
     if verbose:
         print(model)
+    model.to(device)
     return model

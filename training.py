@@ -3,6 +3,7 @@ import torch
 from torch import nn
 
 from data import get_loaders
+from definitions import device
 from utils import print_losses
 
 
@@ -14,16 +15,16 @@ def train_step(
     criterion,
 ):
     optimizer.zero_grad()
-    outputs = model(batch_x)
-    loss = criterion(outputs, batch_y)
+    outputs = model(batch_x.to(device))
+    loss = criterion(outputs, batch_y.to(device))
     loss.backward()
     optimizer.step()
     return loss.item()
 
 
 def test_step(batch_x: torch.Tensor, batch_y: torch.Tensor, model: nn.Module, criterion):
-    outputs = model(batch_x)
-    loss = criterion(outputs, batch_y)
+    outputs = model(batch_x.to(device))
+    loss = criterion(outputs, batch_y.to(device))
     return loss.item()
 
 
@@ -75,6 +76,6 @@ def train_model(
 def get_test_predictions(
     x_train: np.array, y_train: np.array, x_test: np.array, y_test: np.array, model: nn.Module, batch_size: int = 100
 ):
-    train_loader, test_loader = get_loaders(x_train, y_train, x_test, y_test, batch_size)
-    test_predictions = [model(batch_x).cpu().detach().numpy() for batch_x, _ in test_loader]
+    _, test_loader = get_loaders(x_train, y_train, x_test, y_test, batch_size)
+    test_predictions = [model(batch_x.to(device)).cpu().detach().numpy() for batch_x, _ in test_loader]
     return np.concatenate(test_predictions)

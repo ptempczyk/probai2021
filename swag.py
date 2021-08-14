@@ -4,7 +4,7 @@ from torch import nn
 from torch.distributions import MultivariateNormal
 
 from data import get_loaders, load_dataset
-from definitions import LR_SWAG
+from definitions import LR_SWAG, device
 from metrics import RMSE
 from models import create_model, load_model
 from training import test_step, train_step, get_test_predictions, train_model
@@ -64,7 +64,8 @@ def train_SWAG(
                 D = torch.cat((D, deviations), dim=1)
     sigma_diag = theta_square - theta ** 2
     torch.nn.utils.vector_to_parameters(theta, model.parameters())
-    test_losses = [test_step(batch_x, batch_y, model, criterion) for batch_x, batch_y in test_loader]
+    model.to(device)
+    # test_losses = [test_step(batch_x, batch_y, model, criterion) for batch_x, batch_y in test_loader]
     # print(f"Finished SWAG.     Best test loss: {np.mean(test_losses):.5f}")
     return theta, sigma_diag, D, thetas
 
@@ -87,6 +88,7 @@ def sample_from_SWAG(x_train, y_train, x_test, y_test, model, theta_swa, sigma_d
     for _ in range(S):
         sampled_weights = sample_posterior(theta_swa, sigma_diag, D, K)
         torch.nn.utils.vector_to_parameters(sampled_weights, model.parameters())
+        model.to(device)
         test_predictions_list.append(get_test_predictions(x_train, y_train, x_test, y_test, model))
     return test_predictions_list
 

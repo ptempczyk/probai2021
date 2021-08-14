@@ -8,16 +8,17 @@ from definitions import DATA_DIR
 
 
 def get_loaders(
-    x_train: np.array, y_train: np.array, x_test: np.array, y_test: np.array, batch_size: int, val_loader: bool = False
+    x_train_orig: np.array, y_train_orig: np.array, x_test: np.array, y_test: np.array, batch_size: int, val_loader:
+        bool = False
 ):
     if not val_loader:
-        train_ds = TensorDataset(torch.from_numpy(x_train).float(), torch.from_numpy(y_train).float())
+        train_ds = TensorDataset(torch.from_numpy(x_train_orig).float(), torch.from_numpy(y_train_orig).float())
         test_ds = TensorDataset(torch.from_numpy(x_test).float(), torch.from_numpy(y_test).float())
         train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
         test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
         return train_loader, test_loader
     else:
-        x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.1)
+        x_train, x_val, y_train, y_val = train_test_split(x_train_orig, y_train_orig, test_size=0.1)
         train_ds = TensorDataset(torch.from_numpy(x_train).float(), torch.from_numpy(y_train).float())
         val_ds = TensorDataset(torch.from_numpy(x_val).float(), torch.from_numpy(y_val).float())
         test_ds = TensorDataset(torch.from_numpy(x_test).float(), torch.from_numpy(y_test).float())
