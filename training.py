@@ -70,7 +70,7 @@ def train_model(
 
         if epoch - best_epoch >= early_stopping_rounds:
             break
-    print(f"Finished Training. Best validation loss: {best_val_loss:.5f} in epoch {best_epoch}")
+    # print(f"Finished Training. Best validation loss: {best_val_loss:.5f} in epoch {best_epoch}")
 
 
 def get_test_predictions(

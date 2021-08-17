@@ -8,8 +8,12 @@ from definitions import DATA_DIR
 
 
 def get_loaders(
-    x_train_orig: np.array, y_train_orig: np.array, x_test: np.array, y_test: np.array, batch_size: int, val_loader:
-        bool = False
+    x_train_orig: np.array,
+    y_train_orig: np.array,
+    x_test: np.array,
+    y_test: np.array,
+    batch_size: int,
+    val_loader: bool = False,
 ):
     if not val_loader:
         train_ds = TensorDataset(torch.from_numpy(x_train_orig).float(), torch.from_numpy(y_train_orig).float())

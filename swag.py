@@ -22,9 +22,9 @@ def train_SWAG(
     batch_size: int = 100,
     lr: float = 0.1,
     verbose: bool = True,
-    c=1,
-    momentum=0,
-    weight_decay=0,
+    c: int = 1,
+    momentum: float = 0.0,
+    weight_decay: float = 0.0,
 ):
     assert c >= 1 and K >= 2
     train_loader, test_loader = get_loaders(x_train, y_train, x_test, y_test, batch_size)
@@ -93,9 +93,8 @@ def sample_from_SWAG(x_train, y_train, x_test, y_test, model, theta_swa, sigma_d
     return test_predictions_list
 
 
-def run_SWAG(dataset_name, K=10, S=500, weight_decay=1e-6, train_model_flag=True):
-    print("=" * 88)
-    x_train, y_train, x_test, y_test, _, _ = load_dataset(dataset_name)
+def run_SWAG(dataset_name, K=10, S=500, weight_decay=1e-6, train_model_flag=True, verbose=False):
+    x_train, y_train, x_test, y_test, x_scaler, y_scaler = load_dataset(dataset_name, verbose=verbose)
     batch_size = x_train.shape[0] // 9
     model = create_model(x_train, layer_dims=[50], verbose=False)
     if train_model_flag:
@@ -114,9 +113,10 @@ def run_SWAG(dataset_name, K=10, S=500, weight_decay=1e-6, train_model_flag=True
         )
     model = load_model(model, f"best_model_weights-{dataset_name}.pth", verbose=False)
     y_pred = get_test_predictions(x_train, y_train, x_test, y_test, model)
-    print(f"SGD RMSE: {RMSE(y_pred, y_test):.3f}")
     SWAG_lr = LR_SWAG[dataset_name]
-    print(f"SWAG_lr: {SWAG_lr: 0.5f}")
+    if verbose:
+        print(f"SGD RMSE: {RMSE(y_pred, y_test, y_scaler):.3f}")
+        print(f"SWAG_lr: {SWAG_lr: 0.5f}")
     model = load_model(model, f"best_model_weights-{dataset_name}.pth", verbose=False)
     theta_swa, sigma_diag, D, thetas = train_SWAG(
         x_train,
@@ -137,6 +137,8 @@ def run_SWAG(dataset_name, K=10, S=500, weight_decay=1e-6, train_model_flag=True
     y_pred = samples_array.mean(axis=1, keepdims=True)
     y_l = np.percentile(samples_array, 2.5, axis=1, keepdims=True)
     y_u = np.percentile(samples_array, 97.5, axis=1, keepdims=True)
-    print(
-        f"RMSE: {RMSE(y_pred, y_test):.3f}, PICP: {np.mean((y_l < y_test) & (y_test < y_u)):.3f}, MPIW:{np.mean(y_u - y_l):.3f}"
-    )
+    pcip = np.mean((y_l < y_test) & (y_test < y_u))
+    y_l = y_scaler.inverse_transform(y_l)
+    y_u = y_scaler.inverse_transform(y_u)
+    print(f"      SWAG Test | RMSE: {RMSE(y_pred, y_test, y_scaler):.3f}, PICP: {pcip:.3f}, MPIW" f""
+          f":{np.mean(y_u - y_l):.3f}")
