@@ -148,8 +148,11 @@ def run_noisy_ADAM(dataset_name, S=500, verbose=False):
     pcip = np.mean((y_l < y_test) & (y_test < y_u))
     y_l = y_scaler.inverse_transform(y_l)
     y_u = y_scaler.inverse_transform(y_u)
-    print(f"Noisy ADAM Test | RMSE: {RMSE(y_pred, y_test, y_scaler):.3f}, PICP: {pcip:.3f}, MPIW" f""
-          f":{np.mean(y_u - y_l):.3f}")
+    print(
+        f"Noisy ADAM Test | RMSE: {RMSE(y_pred, y_test, y_scaler):.3f}, PICP: {pcip:.3f}, MPIW"
+        f""
+        f":{np.mean(y_u - y_l):.3f}"
+    )
     if verbose:
         plt.plot(np.array(loss_list))
         plt.show()

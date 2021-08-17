@@ -93,7 +93,7 @@ def sample_from_SWAG(x_train, y_train, x_test, y_test, model, theta_swa, sigma_d
     return test_predictions_list
 
 
-def run_SWAG(dataset_name, K=10, S=500, weight_decay=1e-6, train_model_flag=True, verbose=False):
+def run_SWAG(dataset_name, K=10, S=500, weight_decay=0., train_model_flag=True, verbose=False):
     x_train, y_train, x_test, y_test, x_scaler, y_scaler = load_dataset(dataset_name, verbose=verbose)
     batch_size = x_train.shape[0] // 9
     model = create_model(x_train, layer_dims=[50], verbose=False)
@@ -140,5 +140,8 @@ def run_SWAG(dataset_name, K=10, S=500, weight_decay=1e-6, train_model_flag=True
     pcip = np.mean((y_l < y_test) & (y_test < y_u))
     y_l = y_scaler.inverse_transform(y_l)
     y_u = y_scaler.inverse_transform(y_u)
-    print(f"      SWAG Test | RMSE: {RMSE(y_pred, y_test, y_scaler):.3f}, PICP: {pcip:.3f}, MPIW" f""
-          f":{np.mean(y_u - y_l):.3f}")
+    print(
+        f"      SWAG Test | RMSE: {RMSE(y_pred, y_test, y_scaler):.3f}, PICP: {pcip:.3f}, MPIW"
+        f""
+        f":{np.mean(y_u - y_l):.3f}"
+    )
